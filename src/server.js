@@ -1,10 +1,36 @@
-const express = require('express');
+import fetchData from 'node-fetch';
+import express from 'express';
+
 const app = express();
 const port = process.env.PORT || 3000;
 
-const { db } = require('./db.ts'); // Создайте и настройте подключение к базе данных
+import { db } from './db.js';
 
 app.use(express.json());
+
+let cachedData = null;
+async function fetchDataFromAPI() {
+    try {
+        const response = await fetchData(process.env.CRYPTO_PRICE_URL || '');
+        if (response.ok) {
+            cachedData = await response.json(); // Cache data
+        } else {
+            console.error('Ошибка при получении данных:', response.status);
+        }
+    } catch (error) {
+        console.error('Ошибка при выполнении запроса:', error);
+    }
+}
+
+setInterval(fetchDataFromAPI, 70000);
+
+app.get('/getdata', (req, res) => {
+    if (cachedData) {
+        res.json(cachedData);
+    } else {
+        res.status(404).json({ error: 'Данные еще не загружены' });
+    }
+});
 
 app.get('/info', (req, res) => {
     const serverInfo = {
@@ -59,3 +85,5 @@ app.post('/auth', async (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+fetchDataFromAPI();
