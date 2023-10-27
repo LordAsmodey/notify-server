@@ -6,6 +6,16 @@ const { db } = require('./db.ts'); // Создайте и настройте п�
 
 app.use(express.json());
 
+app.get('/info', (req, res) => {
+    const serverInfo = {
+        message: 'Server is working',
+        serverTime: new Date().toTimeString(),
+        version: '1.0.0',
+    };
+
+    res.json(serverInfo);
+});
+
 // Register user
 app.post('/register', async (req, res) => {
     const { email, pass } = req.body;
