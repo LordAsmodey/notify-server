@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3322;
+const port = process.env.PORT || 3000;
 
 const { db } = require('./db.ts'); // Создайте и настройте подключение к базе данных
 
