@@ -6,7 +6,7 @@ const { db } = require('./db.ts'); // Создайте и настройте п�
 
 app.use(express.json());
 
-// Регистрация пользователя
+// Register user
 app.post('/register', async (req, res) => {
     const { email, pass } = req.body;
     try {
@@ -24,7 +24,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-// Аутентификация пользователя
+// Auth user
 app.post('/auth', async (req, res) => {
     const { email, pass } = req.body;
 
