@@ -4,31 +4,65 @@ import express from 'express';
 const app = express();
 const port = process.env.PORT || 3000;
 
-import { db } from './db.js';
+import {db, pgp} from './db.js';
 
 app.use(express.json());
 
 let cachedData = null;
+
+async function updateUsers () {
+    const updateParams = [];
+    const users = await db.any('SELECT * FROM users');
+
+    for (const user of users) {
+        for (const asset of user.favoriteAssets) {
+            const crypto = cachedData.find((c) => c.id === asset.id);
+            const userAlreadyExist = updateParams.some(item => item.userId === user.userId);
+
+            if (crypto) {
+                if (crypto.current_price < asset.minPrice || crypto.current_price > asset.maxPrice && !userAlreadyExist) {
+                    // Add updating params
+                    updateParams.push({ notificationTime: user.userId * 3, userId: user.userId });
+                }
+            }
+        }
+    }
+    console.log(updateParams)
+    if (updateParams.length > 0) {
+        // Todo: Optimize
+
+        const updateQueries = updateParams.map(param => {
+            return pgp.helpers.update(
+                param,
+                ['notificationTime'],
+                'users'
+            ) + ` WHERE "userId" = ${param.userId}`;
+        });
+
+        const combinedQuery = updateQueries.join('; ');
+
+        await db.none(combinedQuery);
+    }
+}
 async function fetchDataFromAPI() {
     try {
         const response = await fetchData(process.env.CRYPTO_PRICE_URL || '');
         if (response.ok) {
             cachedData = await response.json(); // Cache data
         } else {
-            console.error('Ошибка при получении данных:', response.status);
+            console.error('ERROR:', response.status);
         }
+        await updateUsers();
     } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
+        console.error('REQUEST ERROR:', error);
     }
 }
-
-setInterval(fetchDataFromAPI, 70000);
 
 app.get('/getdata', (req, res) => {
     if (cachedData) {
         res.json(cachedData);
     } else {
-        res.status(404).json({ error: 'Данные еще не загружены' });
+        res.status(404).json({ error: 'No data from api' });
     }
 });
 
@@ -86,4 +120,5 @@ app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
 
+setInterval(fetchDataFromAPI, 70000);
 fetchDataFromAPI();

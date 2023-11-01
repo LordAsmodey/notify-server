@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const pgp = pgPromise();
+export const pgp = pgPromise();
 
 const connection = {
     host: process.env.DB_HOST,
