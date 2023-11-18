@@ -16,3 +16,21 @@ export async function registerUser(req, res) {
         res.status(500).json({ message: 'Internal server error' });
     }
 }
+
+export async function authUser(req, res) {
+    const { email, pass } = req.body;
+    try {
+        const existingUser = await UserModel.getUserByEmail(email);
+        if (!existingUser) {
+            return res.json({ message: 'User not registered' });
+        }
+        if (user.pass === pass) {
+            return res.json({ message: 'Authorized!' });
+        } else {
+            return res.json({ message: 'Authorization failed!' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
