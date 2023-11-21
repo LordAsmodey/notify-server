@@ -130,6 +130,22 @@ app.post('/auth', async (req, res) => {
     }
 });
 
+app.get('/getUserInfo', async (req, res) => {
+    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+    if (!token) {
+        return res.status(403).json({ error: '403 forbidden' });
+    }
+    // Todo: add jwt-token service
+
+    try {
+        const user = await db.oneOrNone('SELECT * FROM users WHERE "accessToken" = $1', token);
+        return res.json(user);
+    } catch (err) {
+        console.error(err);
+        return res.status(403).json({ error: 'Invalid token' });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
