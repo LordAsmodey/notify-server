@@ -146,6 +146,88 @@ app.get('/getUserInfo', async (req, res) => {
     }
 });
 
+app.put('/editFavoriteAssets', async (req, res) => {
+    try {
+        // Получение токена из заголовков запроса
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+        // Получение данных ассета из тела запроса
+        const { id, maxPrice, minPrice } = req.body;
+
+        // Поиск пользователя по токену в базе данных
+        const user = await db.oneOrNone('SELECT * FROM users WHERE "accessToken" = $1', [token]);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Пользователь не найден' });
+        }
+
+        // Получение текущего массива favoriteAssets пользователя
+        const currentFavoriteAssets = user.favoriteAssets || [];
+
+        const existingAssetIndex = currentFavoriteAssets.findIndex(asset => asset.id === id);
+
+        // Если ассет существует, обновляем его; иначе, добавляем новый ассет
+        if (existingAssetIndex !== -1) {
+            currentFavoriteAssets[existingAssetIndex] = { id, maxPrice, minPrice };
+        } else {
+            currentFavoriteAssets.push({ id, maxPrice, minPrice });
+        }
+        console.log(currentFavoriteAssets)
+        // Обновление данных пользователя в базе данных
+        const updateQuery = await db.query('UPDATE users SET "favoriteAssets" = $1::json[] WHERE "accessToken" = $2 RETURNING *' , [
+            currentFavoriteAssets, // Не нужно использовать JSON.stringify здесь
+            token,
+        ]);
+        console.log(updateQuery, 'updateQuery')
+        res.status(200).json({ success: true, user: updateQuery[0] });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: '500 Internal Server Error' });
+    }
+});
+
+app.delete('/deleteFavoriteAsset', async (req, res) => {
+    try {
+        // Получение токена из заголовков запроса
+        const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
+
+        // Получение id ассета из тела запроса
+        const { id } = req.body;
+
+        // Поиск пользователя по токену в базе данных
+        const user = await db.oneOrNone('SELECT * FROM users WHERE "accessToken" = $1', [token]);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Пользователь не найден' });
+        }
+
+        // Получение текущего массива favoriteAssets пользователя
+        const currentFavoriteAssets = user.favoriteAssets || [];
+
+        // Поиск ассета с указанным id в массиве
+        const existingAssetIndex = currentFavoriteAssets.findIndex(asset => asset.id === id);
+
+        // Если ассет существует, удаляем его из массива
+        if (existingAssetIndex !== -1) {
+            currentFavoriteAssets.splice(existingAssetIndex, 1);
+
+            // Обновление данных пользователя в базе данных
+           const updatedUser = await db.query('UPDATE users SET "favoriteAssets" = $1::json[] WHERE "accessToken" = $2 RETURNING *', [
+                currentFavoriteAssets,
+                token,
+            ]);
+
+            res.status(200).json({ success: true, user: updatedUser });
+        } else {
+            res.status(404).json({ error: 'Ассет с указанным id не найден в списке избранных' });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+    }
+});
+
+
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
