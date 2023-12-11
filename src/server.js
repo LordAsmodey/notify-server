@@ -104,7 +104,7 @@ app.post('/register', async (req, res) => {
         res.json({ message: 'User registered' });
     } catch (error) {
         console.error('Error during registration:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: '500 Internal Server Error' });
     }
 });
 
@@ -126,7 +126,7 @@ app.post('/auth', async (req, res) => {
         }
     } catch (error) {
         console.error('Error during authentication:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: '500 Internal Server Error' });
     }
 });
 
@@ -172,13 +172,11 @@ app.put('/editFavoriteAssets', async (req, res) => {
         } else {
             currentFavoriteAssets.push({ id, maxPrice, minPrice });
         }
-        console.log(currentFavoriteAssets)
         // Обновление данных пользователя в базе данных
         const updateQuery = await db.query('UPDATE users SET "favoriteAssets" = $1::json[] WHERE "accessToken" = $2 RETURNING *' , [
             currentFavoriteAssets, // Не нужно использовать JSON.stringify здесь
             token,
         ]);
-        console.log(updateQuery, 'updateQuery')
         res.status(200).json({ success: true, user: updateQuery[0] });
     } catch (error) {
         console.error('Error:', error);
@@ -223,7 +221,7 @@ app.delete('/deleteFavoriteAsset', async (req, res) => {
         }
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Внутренняя ошибка сервера' });
+        res.status(500).json({ error: '500 Internal Server Error' });
     }
 });
 
