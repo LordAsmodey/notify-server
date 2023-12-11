@@ -1,124 +1,23 @@
-import fetchData from 'node-fetch';
 import express from 'express';
+import {CryptoModel} from "./models/cryptoModel.js";
+import cryptoRoutes from "./routes/cryptoRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-import {db, pgp} from './db.js';
-
 app.use(express.json());
 
-let cachedData = null;
-
-async function updateUsers () {
-    const updateParams = [];
-    const users = await db.any('SELECT * FROM users');
-
-    for (const user of users) {
-        for (const asset of user.favoriteAssets) {
-            const crypto = cachedData.find((c) => c.id === asset.id);
-            const userAlreadyExist = updateParams.some(item => item.userId === user.userId);
-
-            if (crypto) {
-                if (crypto.current_price < asset.minPrice || crypto.current_price > asset.maxPrice && !userAlreadyExist) {
-                    // Add updating params
-                    updateParams.push({ notificationTime: user.userId * 3, userId: user.userId });
-                }
-            }
-        }
-    }
-    console.log(updateParams)
-    if (updateParams.length > 0) {
-        // Todo: Optimize
-
-        const updateQueries = updateParams.map(param => {
-            return pgp.helpers.update(
-                param,
-                ['notificationTime'],
-                'users'
-            ) + ` WHERE "userId" = ${param.userId}`;
-        });
-
-        const combinedQuery = updateQueries.join('; ');
-
-        await db.none(combinedQuery);
-    }
-}
-async function fetchDataFromAPI() {
-    try {
-        const response = await fetchData(process.env.CRYPTO_PRICE_URL || '');
-        if (response.ok) {
-            cachedData = await response.json(); // Cache data
-        } else {
-            console.error('ERROR:', response.status);
-        }
-        await updateUsers();
-    } catch (error) {
-        console.error('REQUEST ERROR:', error);
-    }
-}
-
-app.get('/getdata', (req, res) => {
-    if (cachedData) {
-        res.json(cachedData);
-    } else {
-        res.status(404).json({ error: 'No data from api' });
-    }
-});
-
-app.get('/info', (req, res) => {
-    const serverInfo = {
-        message: 'Server is working',
-        serverTime: new Date().toTimeString(),
-        version: '1.0.0',
-    };
-
-    res.json(serverInfo);
-});
-
-// Register user
-app.post('/register', async (req, res) => {
-    const { email, pass } = req.body;
-    try {
-        const existingUser = await db.oneOrNone('SELECT * FROM users WHERE email = $1', email);
-
-        if (existingUser) {
-            return res.json({ message: 'User already exists' });
-        }
-
-        await db.none('INSERT INTO users (email, pass) VALUES ($1, $2)', [email, pass]);
-        res.json({ message: 'User registered' });
-    } catch (error) {
-        console.error('Error during registration:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-// Auth user
-app.post('/auth', async (req, res) => {
-    const { email, pass } = req.body;
-
-    try {
-        const user = await db.oneOrNone('SELECT * FROM users WHERE email = $1', email);
-
-        if (!user) {
-            return res.json({ message: 'User not registered' });
-        }
-
-        if (user.pass === pass) {
-            return res.json({ message: 'Authorized!' });
-        } else {
-            return res.json({ message: 'Authorization failed!' });
-        }
-    } catch (error) {
-        console.error('Error during authentication:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
+app.use('/', userRoutes);
+app.use('/', cryptoRoutes);
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+    console.log(`Сервер запущен на порту ${port}`);
 });
 
-setInterval(fetchDataFromAPI, 70000);
-fetchDataFromAPI();
+setInterval(async () => {
+    const cachedData = await CryptoModel.fetchDataFromAPI();
+    if (cachedData) {
+        await CryptoModel.updateUsers(cachedData);
+    }
+}, 70000);
