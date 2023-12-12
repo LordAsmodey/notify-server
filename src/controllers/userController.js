@@ -1,5 +1,6 @@
 import { UserModel } from '../models/userModel.js';
 import {db} from "../db.js";
+import TokenService from "../utils/TokenService.js";
 
 export const UserController = {
     registerUser: async (req, res) => {
@@ -21,6 +22,10 @@ export const UserController = {
 
     authUser: async (req, res) => {
         // Логика аутентификации пользователя
+        const { email } = req.body;
+        const { fingerprint } = req;
+        const token = await TokenService.generateAccessToken({email, fingerprint});
+        return res.json(token);
     },
 
     getUserInfo: async (req, res) => {
