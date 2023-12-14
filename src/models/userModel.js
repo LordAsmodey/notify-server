@@ -5,19 +5,18 @@ export const UserModel = {
         return db.oneOrNone('SELECT * FROM users WHERE email = $1', email);
     },
 
+    findById: async (id) => {
+        return db.oneOrNone('SELECT * FROM users WHERE "userId" = $1', id);
+    },
+
     insertUser: async (email, password, deviceId) => {
-        return db.none('INSERT INTO users (email, password, "deviceId", "favoriteAssets") VALUES ($1, $2, $3, $4)', [email, password, deviceId, []]);
+        return db.query('INSERT INTO users (email, password, "deviceId", "favoriteAssets") VALUES ($1, $2, $3, $4) RETURNING *', [email, password, deviceId, []]);
     },
 
-    findByToken: async (token) => {
-        return db.oneOrNone('SELECT * FROM users WHERE "accessToken" = $1', token);
-    },
-
-    updateUserFavoriteAssets: async (token, favoriteAssets) => {
-        return db.query('UPDATE users SET "favoriteAssets" = $1::json[] WHERE "accessToken" = $2 RETURNING *', [
+    updateUserFavoriteAssets: async (userEmail, favoriteAssets) => {
+        return db.query('UPDATE users SET "favoriteAssets" = $1::json[] WHERE email = $2 RETURNING *', [
             favoriteAssets,
-            token,
+            userEmail,
         ]);
     },
-
 };

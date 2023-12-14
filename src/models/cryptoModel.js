@@ -22,6 +22,7 @@ export const CryptoModel = {
     return cachedData;
   },
 
+  // Notify sending logic
   updateUsers: async (cachedData) => {
     try {
       const updateParams = [];
