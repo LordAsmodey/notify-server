@@ -32,3 +32,13 @@ async function createUsersTable() {
 }
 
 createUsersTable();
+
+
+// refresh_sessions table:
+
+// CREATE TABLE refresh_sessions(
+//   id SERIAL PRIMARY KEY,
+//   "userId" INT NOT NULL REFERENCES users("userId") ON DELETE CASCADE,
+//   refresh_token VARCHAR(400) NOT NULL,
+//   finger_print VARCHAR(128) NOT NULL
+// );

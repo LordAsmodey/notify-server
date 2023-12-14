@@ -1,0 +1,15 @@
+export const ServerErrorResponseEnum = {
+  UnprocessableEntity: 'UNPROCESSABLE_ENTITY',
+  TokenExpired: 'TOKEN_EXPIRED',
+  InvalidateSession: 'INVALIDATE_SESSION',
+  Unauthorized: 'UNAUTHORIZED',
+  BadRequest: 'BAD_REQUEST',
+  Forbidden: 'FORBIDDEN',
+  NotFound: 'NOT_FOUND',
+  MethodNotAllowed: 'METHOD_NOT_ALLOWED',
+  Conflict: 'CONFLICT',
+  InternalServerError: 'INTERNAL_SERVER_ERROR',
+  BadGateway: 'BAD_GATEWAY',
+  ServiceUnavailable: 'SERVICE_UNAVAILABLE',
+  GatewayTimeout: 'GATEWAY_TIMEOUT',
+};
