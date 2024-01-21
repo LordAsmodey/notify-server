@@ -16,10 +16,7 @@ async function createUsersTable() {
                 password VARCHAR(255) NOT NULL,
                 deviceId VARCHAR(255),
                 favoriteAssets JSON[],
-                updateInterval INTEGER,
-                apiKey VARCHAR(255),
-                accessToken VARCHAR(255),
-                refreshToken VARCHAR(255)
+                notificationTime INTEGER,
             );
         `;
         await db.none(createTable);

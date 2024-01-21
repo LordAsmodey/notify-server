@@ -16,11 +16,12 @@ export const UserController = {
             }
 
             const hashedPassword = HashPasswordService.generateHash(password);
+            // Register user
             const user = await UserModel.insertUser(email, hashedPassword, deviceId);
             const accessToken = await TokenService.generateAccessToken({ email });
             const refreshToken = await TokenService.generateRefreshToken({ email });
-
-            await TokenModel.insertRefreshSession(refreshToken, fingerprint, user[0].userId);
+            // Save RefreshSession token
+            await TokenModel.insertRefreshSession(refreshToken, fingerprint, user[0].id);
 
             return res.json({ accessToken, refreshToken });
         } catch (error) {
@@ -47,7 +48,7 @@ export const UserController = {
             const accessToken = await TokenService.generateAccessToken({ email });
             const refreshToken = await TokenService.generateRefreshToken({ email });
 
-            await TokenModel.insertRefreshSession(refreshToken, fingerprint, user.userId);
+            await TokenModel.insertRefreshSession(refreshToken, fingerprint, user.id);
 
             return res.json({ accessToken, refreshToken });
         } catch (error) {
