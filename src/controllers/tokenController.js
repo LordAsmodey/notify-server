@@ -28,7 +28,7 @@ export const TokenController = {
       }
 
       const newAccessToken = await TokenService.generateAccessToken({ email: tokenData.email });
-      const newRefreshToken = await TokenService.generateRefreshToken({ email: tokenData.email, fingerprint });
+      const newRefreshToken = await TokenService.generateRefreshToken({ email: tokenData.email });
 
       await TokenModel.insertRefreshSession(newRefreshToken, fingerprint, userId);
 
