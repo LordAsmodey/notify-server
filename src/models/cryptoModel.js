@@ -1,6 +1,5 @@
 import fetchData from 'node-fetch';
 import { db, pgp } from '../db.js';
-import {sendMsg} from "../openSignal.js";
 
 let cachedData = null;
 

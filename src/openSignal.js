@@ -4,7 +4,7 @@ import * as OneSignal from 'onesignal-node';
 const client = new OneSignal.Client('454552f5-e593-450f-8814-f12e7c26ead2', 'MTZmYWI3OWItYzNiNy00MzUyLTg4Y2ItMmQ1MjQzZGJiNmNh');
 
 // Токен устройства, которому нужно отправить уведомление
-const deviceToken = 'e82b478e-c132-4971-b533-d2898a77809b';
+// const deviceToken = 'e82b478e-c132-4971-b533-d2898a77809b';
 
 const defaultNotification = {
     contents: {
