@@ -26,4 +26,4 @@ export const TokenModel = {
     }
     return db.query(`DELETE FROM refresh_sessions WHERE "userId" = $1`, userId);
   }
-}
+};

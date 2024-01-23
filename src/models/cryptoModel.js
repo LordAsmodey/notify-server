@@ -1,6 +1,5 @@
 import fetchData from 'node-fetch';
 import { db, pgp } from '../db.js';
-import {sendMsg} from "../openSignal.js";
 
 let cachedData = null;
 
@@ -31,7 +30,7 @@ export const CryptoModel = {
 
       for (const user of users) {
         if (!user.favoriteAssets) {
-          continue; // Пропустить пользователя без избранных активов
+          continue; // Пропустить пользователя без избранных вссетов
         }
 
         for (const asset of user.favoriteAssets) {

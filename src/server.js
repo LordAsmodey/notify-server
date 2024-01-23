@@ -1,9 +1,12 @@
 import express from 'express';
-import {CryptoModel} from "./models/cryptoModel.js";
 import cryptoRoutes from "./routes/cryptoRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import Fingerprint from "express-fingerprint";
 import tokenRoutes from "./routes/tokenRoutes.js";
+import cryptoService from "./utils/cryptoService.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 
 const app = express();
@@ -21,12 +24,9 @@ app.use('/', cryptoRoutes);
 app.use('/', tokenRoutes);
 
 app.listen(port, () => {
-    console.log(`Сервер запущен на порту ${port}`);
+    console.log(`Server was started on port ${port}`);
 });
 
-setInterval(async () => {
-    const cachedData = await CryptoModel.fetchDataFromAPI();
-    if (cachedData) {
-        await CryptoModel.updateUsers(cachedData);
-    }
-}, 70000);
+cryptoService.fetchDataAndUpdate();
+
+setInterval(() => cryptoService.fetchDataAndUpdate(), process.env.CRYPTO_PRICE_UPDATE_TIMEOUT);

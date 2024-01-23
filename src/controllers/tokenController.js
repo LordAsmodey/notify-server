@@ -1,7 +1,6 @@
 import {ServerErrorResponseEnum} from "../utils/ErrorResponses.js";
 import {TokenModel} from "../models/tokenModel.js";
 import TokenService from "../utils/TokenService.js";
-import {UserModel} from "../models/userModel.js";
 
 export const TokenController = {
   updateAccessToken: async (req, res) => {
@@ -23,7 +22,7 @@ export const TokenController = {
       const isSessionsMatch = JSON.parse(finger_print).hash === fingerprint.hash;
 
       if (!isSessionsMatch) {
-        await TokenModel.deleteRefreshSessionsByUserId(userId)
+        await TokenModel.deleteRefreshSessionsByUserId(userId);
         return res.status(403).json({ error: ServerErrorResponseEnum.Forbidden });
       }
 
@@ -39,4 +38,4 @@ export const TokenController = {
       res.status(500).json({ message: ServerErrorResponseEnum.InternalServerError });
     }
   },
-}
+};
