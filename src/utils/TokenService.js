@@ -41,25 +41,6 @@ class TokenService {
       return null;
     }
   }
-
-  static async checkAccess(req, _, next) {
-    const authHeader = req.headers.authorization;
-    const token = authHeader?.split(" ")?.[1];
-
-    if (!token) {
-      return next(new Unauthorized());
-    }
-
-    try {
-      req.user = await TokenService.verifyAccessToken(token);
-      console.log(req.user);
-    } catch (error) {
-      console.log(error);
-      return next(new Forbidden(error));
-    }
-
-    next();
-  }
 }
 
 export default TokenService;
