@@ -4,16 +4,16 @@ import dotenv from "dotenv";
 dotenv.config();
 
 class TokenService {
-  static async generateAccessToken(payload) {
-    return await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {
+
+  static async generateTokens(payload) {
+    const accessToken = await jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET_KEY, {
       expiresIn: process.env.ACCESS_TOKEN_EXP_TIME,
     });
-  }
-
-  static async generateRefreshToken(payload) {
-    return await jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET_KEY, {
+    const refreshToken = await jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET_KEY, {
       expiresIn: process.env.REFRESH_TOKEN_EXP_TIME,
     });
+
+    return { accessToken, refreshToken };
   }
 
   static async verifyAccessToken(accessToken) {

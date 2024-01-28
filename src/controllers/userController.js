@@ -18,8 +18,8 @@ export const UserController = {
             const hashedPassword = HashPasswordService.generateHash(password);
             // Register user
             const user = await UserModel.insertUser(email, hashedPassword, deviceId);
-            const accessToken = await TokenService.generateAccessToken({ email });
-            const refreshToken = await TokenService.generateRefreshToken({ email });
+
+            const { accessToken, refreshToken } = await TokenService.generateTokens({ email });
             // Save RefreshSession token
             await TokenModel.insertRefreshSession(refreshToken, fingerprint, user[0].id);
 
@@ -45,8 +45,7 @@ export const UserController = {
             if (!isPasswordValid) {
                 return res.status(401).json({ message: ServerErrorResponseEnum.Unauthorized });
             }
-            const accessToken = await TokenService.generateAccessToken({ email });
-            const refreshToken = await TokenService.generateRefreshToken({ email });
+            const { accessToken, refreshToken } = await TokenService.generateTokens({ email });
 
             await TokenModel.insertRefreshSession(refreshToken, fingerprint, user.id);
 
@@ -71,6 +70,7 @@ export const UserController = {
             if (!user) {
                 return res.status(404).json({ error: ServerErrorResponseEnum.NotFound });
             }
+            delete user.password;
 
             return res.json(user);
         } catch (error) {
@@ -121,7 +121,7 @@ export const UserController = {
             const tokenData = await TokenService.verifyAccessToken(accessToken);
 
             if (!tokenData) {
-                return res.status(403).json({ error: ServerErrorResponseEnum.TokenExpired });
+                return res.status(401).json({ error: ServerErrorResponseEnum.TokenExpired });
             }
 
             const user = await UserModel.findByEmail(tokenData.email);

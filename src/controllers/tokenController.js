@@ -6,7 +6,6 @@ export const TokenController = {
   updateAccessToken: async (req, res) => {
     const { refreshToken } = req.body;
     const { fingerprint } = req;
-
     try {
       const tokenData = await TokenService.verifyRefreshToken(refreshToken);
       if (!tokenData) {
@@ -26,8 +25,9 @@ export const TokenController = {
         return res.status(403).json({ error: ServerErrorResponseEnum.Forbidden });
       }
 
-      const newAccessToken = await TokenService.generateAccessToken({ email: tokenData.email });
-      const newRefreshToken = await TokenService.generateRefreshToken({ email: tokenData.email });
+      const { accessToken: newAccessToken, refreshToken: newRefreshToken } = await TokenService.generateTokens(
+        { email: tokenData.email }
+      );
 
       await TokenModel.insertRefreshSession(newRefreshToken, fingerprint, userId);
 
