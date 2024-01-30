@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'develop') {
     app.use(morgan('dev'));
 }
 app.use(express.json());
