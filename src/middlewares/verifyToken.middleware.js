@@ -11,6 +11,7 @@ export const VerifyTokenMiddleware = async (req, res, next) => {
   try {
     const tokenData = await TokenService.verifyAccessToken(token);
     req.email = tokenData.email;
+    req.userId = tokenData.userId;
     next();
   } catch (err) {
     return res.status(401).json({ error: ServerErrorResponseEnum.TokenExpired });

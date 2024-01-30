@@ -19,7 +19,7 @@ export const UserController = {
             // Register user
             const user = await UserModel.insertUser(email, hashedPassword, deviceId);
 
-            const { accessToken, refreshToken } = await TokenService.generateTokens({ email });
+            const { accessToken, refreshToken } = await TokenService.generateTokens({ email, userId: user.id });
             // Save RefreshSession token
             await TokenModel.insertRefreshSession(refreshToken, fingerprint, user[0].id);
 
@@ -45,7 +45,7 @@ export const UserController = {
             if (!isPasswordValid) {
                 return res.status(401).json({ message: ServerErrorResponseEnum.Unauthorized });
             }
-            const { accessToken, refreshToken } = await TokenService.generateTokens({ email });
+            const { accessToken, refreshToken } = await TokenService.generateTokens({ email, userId: user.id });
 
             await TokenModel.insertRefreshSession(refreshToken, fingerprint, user.id);
 

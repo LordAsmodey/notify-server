@@ -6,9 +6,9 @@ export async function up(knex) {
     CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
       user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      currency VARCHAR(10) NOT NULL,
-      price_min DECIMAL(18, 2) NOT NULL,
-      price_max DECIMAL(18, 2) NOT NULL,
+      currency VARCHAR(30) NOT NULL,
+      price_min DECIMAL(18, 8) NOT NULL,
+      price_max DECIMAL(18, 8) NOT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
@@ -19,9 +19,9 @@ export async function up(knex) {
       id SERIAL PRIMARY KEY,
       notification_id INT NOT NULL REFERENCES notifications(id) ON DELETE CASCADE,
       user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      currency VARCHAR(10) NOT NULL,
-      price_min DECIMAL(18, 2) NOT NULL,
-      price_max DECIMAL(18, 2) NOT NULL,
+      currency VARCHAR(30) NOT NULL,
+      price_min DECIMAL(18, 8) NOT NULL,
+      price_max DECIMAL(18, 8) NOT NULL,
       sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `);
