@@ -37,13 +37,13 @@ export const UserController = {
             const user = await UserModel.findByEmail(email);
 
             if (!user) {
-                return res.status(404).json({ message: ServerErrorResponseEnum.NotFound });
+                return res.status(404).json({ message: ServerErrorResponseEnum.UserNotRegistered });
             }
 
             const isPasswordValid = await HashPasswordService.comparePasswords(password, user.password);
 
             if (!isPasswordValid) {
-                return res.status(401).json({ message: ServerErrorResponseEnum.Unauthorized });
+                return res.status(401).json({ message: ServerErrorResponseEnum.WrongPassword });
             }
             const { accessToken, refreshToken } = await TokenService.generateTokens({ email, userId: user.id });
 

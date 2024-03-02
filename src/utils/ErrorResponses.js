@@ -12,4 +12,7 @@ export const ServerErrorResponseEnum = {
   BadGateway: 'BAD_GATEWAY',
   ServiceUnavailable: 'SERVICE_UNAVAILABLE',
   GatewayTimeout: 'GATEWAY_TIMEOUT',
+  NotificationAlreadyEnabled: 'NOTIFICATION_ALREADY_ENABLED',
+  WrongPassword: 'WRONG_PASSWORD',
+  UserNotRegistered: 'USER_NOT_REGISTERED',
 };

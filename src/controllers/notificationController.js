@@ -10,7 +10,7 @@ export const NotificationController = {
       const isNotificationExist = userNotifications.some(notify => notify.currency === currency);
 
       if (isNotificationExist) {
-        return res.status(409).json({ message: ServerErrorResponseEnum.Conflict });
+        return res.status(409).json({ message: ServerErrorResponseEnum.NotificationAlreadyEnabled });
       }
 
       const newNotification = await NotificationModel.insertNotification(userId, currency, priceMin, priceMax);
