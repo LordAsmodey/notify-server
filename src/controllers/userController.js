@@ -1,6 +1,6 @@
 import { UserModel } from '../models/userModel.js';
-import TokenService from "../utils/TokenService.js";
-import HashPasswordService from "../utils/HashPasswordService.js";
+import TokenService from "../services/TokenService.js";
+import HashPasswordService from "../services/HashPasswordService.js";
 import { ServerErrorResponseEnum } from "../utils/ErrorResponses.js";
 import {TokenModel} from "../models/tokenModel.js";
 
@@ -21,7 +21,7 @@ export const UserController = {
 
             const { accessToken, refreshToken } = await TokenService.generateTokens({ email, userId: user.id });
             // Save RefreshSession token
-            await TokenModel.insertRefreshSession(refreshToken, fingerprint, user[0].id);
+            await TokenModel.insertRefreshSession(refreshToken, fingerprint, user.id);
 
             return res.json({ accessToken, refreshToken });
         } catch (error) {
