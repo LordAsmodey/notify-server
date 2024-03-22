@@ -17,7 +17,7 @@ export async function up(knex) {
   await knex.raw(`
     CREATE TABLE IF NOT EXISTS sent_notifications (
       id SERIAL PRIMARY KEY,
-      notification_id INT NOT NULL REFERENCES notifications(id) ON DELETE CASCADE,
+      notification_id INT NOT NULL,
       user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       currency VARCHAR(30) NOT NULL,
       price_min DECIMAL(18, 8) NOT NULL,

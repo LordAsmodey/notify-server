@@ -1,5 +1,5 @@
 import { ServerErrorResponseEnum } from "../utils/ErrorResponses.js";
-import TokenService from "../utils/TokenService.js";
+import TokenService from "../services/TokenService.js";
 
 export const VerifyTokenMiddleware = async (req, res, next) => {
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];

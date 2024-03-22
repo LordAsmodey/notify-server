@@ -1,6 +1,6 @@
 import {ServerErrorResponseEnum} from "../utils/ErrorResponses.js";
 import {TokenModel} from "../models/tokenModel.js";
-import TokenService from "../utils/TokenService.js";
+import TokenService from "../services/TokenService.js";
 
 export const TokenController = {
   updateAccessToken: async (req, res) => {

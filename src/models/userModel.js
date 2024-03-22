@@ -6,7 +6,7 @@ export const UserModel = {
     },
 
     insertUser: async (email, password, deviceId) => {
-        return db.query('INSERT INTO users (email, password, "deviceId", "favoriteAssets") VALUES ($1, $2, $3, $4) RETURNING *', [email, password, deviceId, []]);
+        return db.one('INSERT INTO users (email, password, "deviceId", "favoriteAssets") VALUES ($1, $2, $3, $4) RETURNING *', [email, password, deviceId, []]);
     },
 
     updateUserFavoriteAssets: async (userEmail, favoriteAssets) => {
@@ -14,5 +14,8 @@ export const UserModel = {
             favoriteAssets,
             userEmail,
         ]);
+    },
+    findById: async (id) => {
+        return db.oneOrNone('SELECT * FROM users WHERE id = $1', id);
     },
 };

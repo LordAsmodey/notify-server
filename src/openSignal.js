@@ -1,16 +1,15 @@
 import * as OneSignal from 'onesignal-node';
+import dotenv from "dotenv";
 
-// Создание экземпляра OneSignal с использованием вашего APP_ID и REST API ключа
-const client = new OneSignal.Client('454552f5-e593-450f-8814-f12e7c26ead2', 'MTZmYWI3OWItYzNiNy00MzUyLTg4Y2ItMmQ1MjQzZGJiNmNh');
+dotenv.config();
 
-// Токен устройства, которому нужно отправить уведомление
-// const deviceToken = 'e82b478e-c132-4971-b533-d2898a77809b';
+const client = new OneSignal.Client(process.env.ONE_SIGNAL_APP_ID, process.env.ONE_SIGNAL_API_KEY);
 
 const defaultNotification = {
     contents: {
         'en': 'Default Notification',
     },
-    include_aliases: { "deviceId": ["716a64718c04ec04"]},
+    include_aliases: { "external_id": ["716a64718c04ec04"]},
     "target_channel": "push",
 };
 
